@@ -13,6 +13,7 @@ const create = async (req , res) => {
 
   if(!user){
     return res.status(400).send({ message: "error creating User"})
+    
   }
 
   //testar para ver se remover o senha daqui para nao mostrar para o usuario a senha mas se ela aparece no banco de dados ainda cryptografada
@@ -54,7 +55,7 @@ const findById = async (req , res) => {
 const update = async (req,res) => {
   try
 {
-    const {name , usuario , senha , cpf , email , avatar , background} = req.body
+    const {name , usuario , senha   ,email , avatar , background} = req.body
 
   if(!name && !usuario && !senha && !email && !avatar && !background) {
     res.status(400).send({message : "Digite ao menos 1 campo para atualização do usuario"}) // if para checar todos os campos para poder atualizar 1 campo, precisa de 1 campo no minimo mas pode ter varios

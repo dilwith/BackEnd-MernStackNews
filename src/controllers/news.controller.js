@@ -57,9 +57,10 @@ export const findAll = async (req , res) => {
     //console.log(typeof limit ,limit , typeof offset , offset)
 
     const news = await findAllServices(offset , limit);
+
     const total = await countNews()
+
     const currentUrl = req.baseUrl
-    console.log(currentUrl)
 
     const next = offset + limit
     const nextUrl = 
@@ -69,14 +70,18 @@ export const findAll = async (req , res) => {
     const previusUrl =
      previous != null ? `${currentUrl}?limit=${limit}&ofsset=${previous}` : null
 
+    /*
     if(news.length === 0){
         return res.status(400).send({
             message: "there are no registered news"
         })
     }
+    */
+    news.shift()
 
-    res.send({
-        nextUrl,
+    res.send(
+        {
+        nextUrl ,
         previusUrl,
         limit,
         offset,

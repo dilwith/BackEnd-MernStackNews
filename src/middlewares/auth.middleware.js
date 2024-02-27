@@ -8,7 +8,7 @@ export const authMiddleware = (req,res,next) => {
     try{
         const { authorization } = req.headers
         //console.log("Debug auth.middleware authorization 1: " , authorization)
-        //Bearer and JWT
+        //Bearer and JWT 
         
     if(!authorization) {
         return res.send(401)

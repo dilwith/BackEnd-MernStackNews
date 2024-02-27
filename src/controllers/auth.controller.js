@@ -1,4 +1,4 @@
-import bcrypt from 'bcrypt'
+//import bcrypt from 'bcrypt'      desintalado, para baixar npm i bcrypt
 import { loginService , generateToken } from '../services/auth.service.js'
 
 const login = async (req , res) => {
@@ -11,9 +11,16 @@ const login = async (req , res) => {
             return res.status(404).send({message : "Senha ou usuario nao encontrado"}) 
         }
 
-        const senhaIsValid = bcrypt.compareSync(senha , user.senha)
+        /*const senhaIsValid = bcrypt.compareSync(senha , user.senha)
 
         if(!senhaIsValid) {
+            return res.status(400).send({message : "Senha ou usuario nao encontrado"})
+        }
+
+        VERIFICAÇÃO PARA UTILIZAÇÃO DO BCRYPT -- caso seja necessaria a implementação mudar no user.js ( models )-- já comentado o codigo ncessario 
+        */
+
+        if(!senha) {
             return res.status(400).send({message : "Senha ou usuario nao encontrado"})
         }
     

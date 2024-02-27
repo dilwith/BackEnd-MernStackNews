@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import bcrypt from 'bcrypt'
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -28,9 +27,8 @@ const UserSchema = new mongoose.Schema({
     background: {
       type: String,
       required: false,
-    },
+    }
 })
-//retirar o cpf depois
 /*
  name: {
     type: String,
@@ -60,11 +58,15 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-*/
+
+----------------------------------------------------------
+Para usar junto do Bcrypt -- atualmente desinstalado, se clocado precisa de verificaçoes no auth.controller
+
 UserSchema.pre("save", async function (next) {
     this.senha = await bcrypt.hash(this.senha , 6)
     next()
 })
+*/
 
 const User = mongoose.model("User", UserSchema)
 
