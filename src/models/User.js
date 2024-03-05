@@ -1,36 +1,8 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 const UserSchema = new mongoose.Schema({
-    name: {
-        type: String,
-        required : true,
-    }, 
-    usuario: {
-        type: String,
-        required : true,
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-    },
-     senha: {
-        type: String,
-        required : true,
-        select : false
-    },
-    avatar: {
-      type: String,
-      required: false,
-    },
-    background: {
-      type: String,
-      required: false,
-    }
-})
-/*
- name: {
+  name: {
     type: String,
     required: true,
   },
@@ -58,16 +30,13 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-
-----------------------------------------------------------
-Para usar junto do Bcrypt -- atualmente desinstalado, se clocado precisa de verificaçoes no auth.controller
+});
 
 UserSchema.pre("save", async function (next) {
-    this.senha = await bcrypt.hash(this.senha , 6)
-    next()
-})
-*/
+  this.password = await bcrypt.hash(this.password, 10);
+  next();
+});
 
-const User = mongoose.model("User", UserSchema)
+const User = mongoose.model("User", UserSchema);
 
 export default User;

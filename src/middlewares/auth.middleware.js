@@ -1,53 +1,32 @@
-import dotenv from "dotenv"
-import userService from "../services/user.service.js"
-import jwt from "jsonwebtoken"
+import "dotenv/config";
+import jwt from "jsonwebtoken";
+import userRepositories from "../repositories/user.repositories.js";
 
-dotenv.config()
-export const authMiddleware = (req,res,next) => {
-    //Bearer serve como um autenficiador de 2 etapas, para o JWT token em uma seção de usuario, utilizado para VERIFICAR 
-    try{
-        const { authorization } = req.headers
-        //console.log("Debug auth.middleware authorization 1: " , authorization)
-        //Bearer and JWT 
-        
-    if(!authorization) {
-        return res.send(401)
-    }
+function authMiddleware(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader)
+    return res.status(401).send({ message: "The token was not informed!" });
 
-    const parts = authorization.split(" ")
-    //console.log("Debug auth.middleware authorization 2(parts): " , parts)
- 
-    if(parts.length !== 2){
-        return res.send(401)
-    }// Bearer JWT --> 2 campos por isso !== 2 - Bearer - JWT
+  const parts = authHeader.split(" "); /* ["Bearer", "asdasdasdadsadasd"] */
+  if (parts.length !== 2)
+    return res.status(401).send({ message: "Invalid token!" });
 
-    const [schema , token] = parts
-    //console.log("Debug auth.middleware authorization 3(schema , token): " ,schema , token)
-    //schema - Bearer
-    //token - JWT 
+  const [scheme, token] = parts;
 
-    if(schema !== "Bearer") {
-        return res.send(401)
-    }
-    //validação do token JWT
-    jwt.verify(token , process.env.SECRET_JWT , async (error , decoded) => { 
-        if(error){
-            return res.status(401).send({message: "Token invalid!"})
-        }
-        const user = await userService.findByIdService(decoded.id)
+  if (!/^Bearer$/i.test(scheme))
+    return res.status(401).send({ message: "Malformatted Token!" });
 
-        if(!user || !user.id){
-            return res.status(401).send({message: "Token invalid!"})
-        }
-    
-        req.userId = user._id
+  jwt.verify(token, process.env.SECRET, async (err, decoded) => {
+    if (err) return res.status(401).send({ message: "Invalid token!" });
 
-        return next()
-    })
-    }
-    catch (err) {
-        res.status(500).send(err.message)
-    }
-    
-    
+    const user = await userRepositories.findByIdUserRepository(decoded.id);
+    if (!user || !user.id)
+      return res.status(401).send({ message: "Invalid token!" });
+
+    req.userId = user.id;
+
+    return next();
+  });
 }
+
+export default authMiddleware;

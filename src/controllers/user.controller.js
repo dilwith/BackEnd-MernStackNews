@@ -1,85 +1,66 @@
-import userService from '../services/user.service.js'
+import userService from "../services/user.service.js";
 
-const create = async (req , res) => {
-  try 
-{
-  const {name , usuario , senha  , email , avatar , background} = req.body
+async function createUserController(req, res) {
+  const { name, username, email, password, avatar, background } = req.body;
 
-  if(!name || !usuario || !senha  || !email ) {
-    res.status(400).send({message : "Submit all fields for registration (avatar and backgroud not need"})
-  }
-
-  const user = await userService.createService(req.body)
-
-  if(!user){
-    return res.status(400).send({ message: "error creating User"})
-    
-  }
-
-  //testar para ver se remover o senha daqui para nao mostrar para o usuario a senha mas se ela aparece no banco de dados ainda cryptografada
-  res.status(201).send({ 
-    message: "User created successfully",
-    user: {
-      id : user._id,
-      name, 
-      usuario,
+  try {
+    const token = await userService.createUserService({
+      name,
+      username,
       email,
+      password,
       avatar,
-      background
-    }
-  })
-} catch(err) {
-  res.status(500).send({message:err.message})
-}} // Cria o usario e o insere no banco de dados  
-
-const findAll = async (req , res) => {
-  try
-{
-  const users = await userService.findAllService(); 
-
-  if(users.length === 0) {
-    return res.status(400).send({message: "Nao tem usuarios cadastrados"})
+      background,
+    }); 
+    
+    res.status(201).send(token);
+  } catch (e) {
+    return res.status(400).send(e.message , "Erro no user service");
   }
+}
 
-  res.send(users)
-}catch(err) {
-  res.status(500).send({message:err.message})
-}}// findAll busca todos os usuarios cadastrados 
-
-const findById = async (req , res) => {
-  const user = req.user
-
-  res.send(user)
-}// FindById busca 1 usuario pelo seu Id
-
-const update = async (req,res) => {
-  try
-{
-    const {name , usuario , senha   ,email , avatar , background} = req.body
-
-  if(!name && !usuario && !senha && !email && !avatar && !background) {
-    res.status(400).send({message : "Digite ao menos 1 campo para atualização do usuario"}) // if para checar todos os campos para poder atualizar 1 campo, precisa de 1 campo no minimo mas pode ter varios
+async function findAllUserController(req, res) {
+  try {
+    const users = await userService.findAllUserService();
+    return res.send(users);
+  } catch (e) {
+    return res.status(404).send(e.message);
   }
-  const id = req.id;   // const {id , user} = req (possivel mudança)
-
-  await userService.updateService(
-    id,
-    name,
-    usuario,
-    senha,
-    email,
-    avatar ,        //|| null,
-    background      //|| null
-  )
-  res.send({message:"Usuario atualizado com sucesso"})
 }
-catch(err) {
-  res.status(500).send({message:err.message})
+
+async function findUserByIdController(req, res) {
+  try {
+    const user = await userService.findUserByIdService(
+      req.params.id,
+      req.userId
+    );
+    return res.send(user);
+  } catch (e) {
+    return res.status(400).send(e.message);
+  }
 }
-  
-}// Atualiza o dado ou os dados de 1 usuario 
 
-export default { create , findAll , findById , update};
+async function updateUserController(req, res) {
+  try {
+    const { name, username, email, password, avatar, background } = req.body;
+    const { id: userId } = req.params;
+    const userIdLogged = req.userId;
 
-// atualizado para email avatar background
-//possivel erro escrever background errado u.u  (bankgroud)
+    const response = await userService.updateUserService(
+      { name, username, email, password, avatar, background },
+      userId,
+      userIdLogged
+    );
+
+    return res.send(response);
+  } catch (e) {
+    res.status(400).send(e.message);
+  }
+}
+
+export default {
+  createUserController,
+  findAllUserController,
+  findUserByIdController,
+  updateUserController,
+};
