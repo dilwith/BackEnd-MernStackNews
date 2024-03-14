@@ -5,11 +5,13 @@ function createPostRepository(title, banner, text, userId) {
 }
 
 function findAllPostsRepository(offset, limit) {
-  return Post.find()
+  
+  
+   return Post.find()
     .sort({ _id: -1 })
     .skip(offset)
     .limit(limit)
-    .populate("user");
+    .populate("user")
 }
 
 function topNewsRepository() {

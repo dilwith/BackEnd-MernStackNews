@@ -29,10 +29,11 @@ async function findAllPostsService(limit, offset, currentUrl) {
     offset = 0;
   }
 
+  
   const posts = await postRepositories.findAllPostsRepository(offset, limit);
 
   const total = await postRepositories.countPosts();
-
+  
   const next = offset + limit;
   const nextUrl =
     next < total ? `${currentUrl}?limit=${limit}&offset=${next}` : null;
@@ -57,9 +58,9 @@ async function findAllPostsService(limit, offset, currentUrl) {
       text: post.text,
       likes: post.likes,
       comments: post.comments,
-      name: post.user.name,
-      username: post.user.username,
-      avatar: post.user.avatar,
+      name: post.user?.name,
+      username: post.user?.username,
+      avatar: post.user?.avatar,
     })),
   };
 }
